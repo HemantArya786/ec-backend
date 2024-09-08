@@ -213,6 +213,22 @@ app.post("/cart/addItem/:id", async (req, res) => {
   res.json({ message: "add value in cart ", data: findProduct });
 });
 
+// ? how to do total random idea
+
+app.get("/cart/totalprice/:id", async (req, res) => {
+  const userId = req.params.id;
+  const foundCart = await cart.findOne({ userId });
+  const priceArray = [];
+
+  foundCart.product.map((item) => priceArray.push(item.price));
+
+  const total = priceArray.reduce(
+    (accumulator, currentValue) => accumulator + currentValue
+  );
+
+  res.json({ message: "calculation of total price", total: total });
+});
+
 //model
 const product = mongoose.model("product", ProductSchema);
 const productUser = mongoose.model("productUser", UserSchema);
