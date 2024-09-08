@@ -8,26 +8,6 @@ const port = 3000;
 
 mongoose.connect("mongodb+srv://hemant:hemant@cluster0.6w5hjzu.mongodb.net/");
 
-/* 
-
-ProductSchema -> { name: "toy", price: 20 }
-
-UserSchema -> { username: "rohit", email: "rohit@r1.com", cart: [CartSchema] }
-
-CartSchema -> { products: [ProductSchema], total: 1000, tax: 50 }
-
-{
-  username: "rohit",
-  email: "r1@r1.com",
-  cart: {
-    products: [{ name: "toy", price: "50" }],
-    tax: 50,
-    total: 1000
-  }
-}
-
-*/
-
 //Product Schema
 const ProductSchema = new mongoose.Schema({
   productName: String,
@@ -154,8 +134,6 @@ app.post("/cart", async (req, res) => {
 app.get("/cart", async (req, res) => {
   const allCart = await cart.find();
   res.json({ message: "all cart", data: allCart });
-
-  res.json({ message: "requsted cart ", data: allCart });
 });
 
 // find cart by id
@@ -168,15 +146,55 @@ app.get("/cart/:id", async (req, res) => {
 
 //Add quantity
 
-app.put("/cart/:id", async (req, res) => {
-  const reciveUserId = req.params.id;
+app.put("/cart/increase/:id", async (req, res) => {
+  const userId = req.params.id;
   const productId = req.body.productId;
-  const productPrice = req.body.price;
 
-  const findProductInUserCart = await cart.findOne({ userId: reciveUserId });
-  console.log(findProductInUserCart, " kya mila");
+  const foundCart = await cart.findOne({ userId });
+  const foundIndex = foundCart.product.findIndex(
+    (item) => item._id == productId
+  );
+  console.log(foundIndex);
+  foundCart.product[foundIndex].quantity =
+    foundCart.product[foundIndex].quantity + 1;
+  const result = await foundCart.save();
 
-  res.json({ id: reciveUserId, product: productId, price: productPrice });
+  res.json({ message: "recive", data: result });
+});
+
+// decrease quantity
+
+app.put("/cart/decrease/:id", async (req, res) => {
+  const userId = req.params.id;
+  const productId = req.body.productId;
+
+  const foundCart = await cart.findOne({ userId });
+  const foundIndex = foundCart.product.findIndex(
+    (item) => item._id == productId
+  );
+
+  foundCart.product[foundIndex].quantity =
+    foundCart.product[foundIndex].quantity - 1;
+
+  const result = await foundCart.save();
+
+  res.json({ message: "decrease quantity", data: result });
+});
+
+// remove item
+app.delete("/cart/removeitem/:id", async (req, res) => {
+  const userId = req.params.id;
+  const productId = req.body.productId;
+
+  const foundCart = await cart.findOne({ userId });
+
+  // const removeItem = await foundCart.product.deleteProductId(productId);
+
+  res.json({
+    message: "item remove",
+
+    foundCart: foundCart,
+  });
 });
 
 //model
