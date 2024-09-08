@@ -121,20 +121,20 @@ app.put("/update_user/:id", async (req, res) => {
 
 //cart api
 
-//create car api
-app.post("/cart", async (req, res) => {
-  const userCart = await req.body;
-  const newCart = new cart(userCart);
-  newCart.save();
+//create cart api
+// app.post("/cart", async (req, res) => {
+//   const userCart = await req.body;
+//   const newCart = new cart(userCart);
+//   newCart.save();
 
-  res.json({ message: "requsted cart ", data: userCart });
-});
+//   res.json({ message: "requsted cart ", data: userCart });
+// });
 
 //all cart api
-app.get("/cart", async (req, res) => {
-  const allCart = await cart.find();
-  res.json({ message: "all cart", data: allCart });
-});
+// app.get("/cart", async (req, res) => {
+//   const allCart = await cart.find();
+//   res.json({ message: "all cart", data: allCart });
+// });
 
 // find cart by id
 app.get("/cart/:id", async (req, res) => {
@@ -188,13 +188,29 @@ app.delete("/cart/removeitem/:id", async (req, res) => {
 
   const foundCart = await cart.findOne({ userId });
 
-  // const removeItem = await foundCart.product.deleteProductId(productId);
+  foundCart.product = foundCart.product.filter((item) => item._id != productId);
+
+  foundCart.save();
 
   res.json({
     message: "item remove",
-
-    foundCart: foundCart,
   });
+});
+
+//add item in cart
+
+app.post("/cart/addItem/:id", async (req, res) => {
+  const userId = req.params.id;
+  const productId = req.body.productId;
+
+  const foundCart = await cart.findOne({ userId });
+  const findProduct = await product.findById(productId);
+
+  foundCart.product.push(findProduct);
+
+  foundCart.save();
+
+  res.json({ message: "add value in cart ", data: findProduct });
 });
 
 //model
