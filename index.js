@@ -24,6 +24,7 @@ const UserSchema = new mongoose.Schema({
   lastname: String,
   email: String,
   phoneNumber: String,
+  password: String,
 });
 
 //cart schema
@@ -106,6 +107,24 @@ app.get("/users", async (req, res) => {
   try {
     const allusers = await productUser.find();
     res.json({ message: "all user data", data: allusers });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//login user
+
+app.post("/login", async (req, res) => {
+  try {
+    const { email, phone, password, firstname } = req.body.data;
+
+    const findingUser = await productUser.findOne({ email });
+
+    if (findingUser.password === password) {
+      console.log("user login");
+
+      res.json({ data: findingUser });
+    }
   } catch (error) {
     console.log(error);
   }
