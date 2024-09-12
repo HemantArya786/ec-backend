@@ -1,8 +1,10 @@
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
+const cors = require("cors");
 const bodyParser = require("body-parser");
 app.use(bodyParser.json());
+app.use(cors());
 
 const port = 3000;
 
@@ -16,11 +18,13 @@ const ProductSchema = new mongoose.Schema({
   image: String,
   description: String,
   quantity: Number,
+  postiveRating: Number,
+  negativeRating: Number,
 });
 
 //user Schema
 const UserSchema = new mongoose.Schema({
-  fistname: String,
+  firstname: String,
   lastname: String,
   email: String,
   phoneNumber: String,
@@ -116,14 +120,14 @@ app.get("/users", async (req, res) => {
 
 app.post("/login", async (req, res) => {
   try {
-    const { email, phone, password, firstname } = req.body.data;
+    const { email, phone, password, firstname } = req.body;
 
     const findingUser = await productUser.findOne({ email });
 
     if (findingUser.password === password) {
       console.log("user login");
 
-      res.json({ data: findingUser });
+      res.json({ message: "resive user email and pasword", data: findingUser });
     }
   } catch (error) {
     console.log(error);
@@ -137,7 +141,7 @@ app.post("/new_users", async (req, res) => {
     const newUser = await new productUser(user);
     newUser.save();
 
-    res.json({ message: "user save successfully" });
+    res.json({ message: "user save successfully", data: newUser });
   } catch (error) {
     console.log(error);
   }
