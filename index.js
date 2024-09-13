@@ -22,6 +22,13 @@ const ProductSchema = new mongoose.Schema({
   negativeRating: Number,
 });
 
+//cart schema
+
+// const CartSchema = new mongoose.Schema({
+//   product: [ProductSchema],
+//   userId: String,
+// });
+
 //user Schema
 const UserSchema = new mongoose.Schema({
   firstname: String,
@@ -29,13 +36,7 @@ const UserSchema = new mongoose.Schema({
   email: String,
   phoneNumber: String,
   password: String,
-});
-
-//cart schema
-
-const CartSchema = new mongoose.Schema({
-  product: [ProductSchema],
-  userId: String,
+  userCart: [ProductSchema],
 });
 
 //Product CRUD API
@@ -211,11 +212,10 @@ app.put("/update_user/:id", async (req, res) => {
 app.get("/cart/:id", async (req, res) => {
   try {
     const reciveUserId = req.params.id;
-    const findUserById = await cart.find({ userId: reciveUserId });
+    const findUserById = await productUser.findOne({ _id: reciveUserId });
 
     res.json({
       message: "recive user id",
-      id: reciveUserId,
       data: findUserById,
     });
   } catch (error) {
@@ -297,14 +297,17 @@ app.post("/cart/addItem/:id", async (req, res) => {
     const userId = req.params.id;
     const productId = req.body.productId;
 
-    const foundCart = await cart.findOne({ userId });
+    const foundCart = await productUser.findOne({ _id: userId });
     const findProduct = await product.findById(productId);
 
-    foundCart.product.push(findProduct);
+    foundCart.userCart.push(findProduct);
 
-    foundCart.save();
+    await foundCart.save();
 
-    res.json({ message: "add value in cart ", data: findProduct });
+    res.json({
+      message: "add value in cart ",
+      userData: foundCart,
+    });
   } catch (error) {
     console.log(error);
   }
@@ -333,6 +336,6 @@ app.get("/cart/totalprice/:id", async (req, res) => {
 //model
 const product = mongoose.model("product", ProductSchema);
 const productUser = mongoose.model("productUser", UserSchema);
-const cart = mongoose.model("cart", CartSchema);
+// const cart = mongoose.model("cart", CartSchema);
 
 app.listen(port, () => console.log(`Server running on port ${port}`));
