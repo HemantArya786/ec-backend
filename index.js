@@ -274,17 +274,19 @@ app.delete("/cart/removeitem/:id", async (req, res) => {
     const userId = req.params.id;
     const productId = req.body.productId;
 
-    const foundCart = await cart.findOne({ userId });
+    res.json({ id: userId, productId: productId });
 
-    foundCart.product = foundCart.product.filter(
-      (item) => item._id != productId
-    );
+    // const foundCart = await productUser.findOne({ _id: userId });
 
-    foundCart.save();
+    // foundCart.userCart = foundCart.userCart.filter(
+    //   (item) => item._id != productId
+    // );
 
-    res.json({
-      message: "item remove",
-    });
+    // foundCart.save();
+
+    // res.json({
+    //   message: "item remove",
+    // });
   } catch (error) {
     console.log(error);
   }
@@ -318,16 +320,19 @@ app.post("/cart/addItem/:id", async (req, res) => {
 app.get("/cart/totalprice/:id", async (req, res) => {
   try {
     const userId = req.params.id;
-    const foundCart = await cart.findOne({ userId });
+    const foundCart = await productUser.findOne({ _id: userId });
     const priceArray = [];
 
-    foundCart.product.map((item) => priceArray.push(item.price));
+    foundCart.userCart.map((item) => priceArray.push(item.price));
 
     const total = priceArray.reduce(
       (accumulator, currentValue) => accumulator + currentValue
     );
 
-    res.json({ message: "calculation of total price", total: total });
+    res.json({
+      message: "calculation of total price",
+      total: total,
+    });
   } catch (error) {
     console.log(error);
   }
