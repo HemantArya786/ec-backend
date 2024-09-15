@@ -13,7 +13,7 @@ mongoose.connect("mongodb+srv://hemant:hemant@cluster0.6w5hjzu.mongodb.net/");
 //Product Schema
 const ProductSchema = new mongoose.Schema({
   productName: String,
-  catagory: String,
+  category: String,
   price: Number,
   image: String,
   description: String,
@@ -62,7 +62,7 @@ app.get("/product/:id", async (req, res) => {
   }
 });
 
-app.post("/createproduct", async (req, res) => {
+app.post("/admin/createproduct", async (req, res) => {
   try {
     const productData = await req.body;
     const newProduct = new product(productData);
@@ -337,6 +337,18 @@ app.get("/cart/totalprice/:id", async (req, res) => {
     console.log(error);
   }
 });
+
+// app.post("/search", async (req, res) => {
+//   try {
+//     const searchValue = req.body.search;
+
+//     const findSeachValue = (searchValue);
+
+//     res.json({ data: findSeachValue });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// });
 
 //model
 const product = mongoose.model("product", ProductSchema);
