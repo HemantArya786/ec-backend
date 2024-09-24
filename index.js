@@ -271,22 +271,25 @@ app.put("/cart/decrease/:id", async (req, res) => {
 // remove item
 app.delete("/cart/removeitem/:id", async (req, res) => {
   try {
+    // console.log(req.body, "request body");
     const userId = req.params.id;
     const productId = req.body.productId;
 
-    res.json({ id: userId, productId: productId });
+    // res.json({ id: userId, productId: productId });
+    // console.log(productId, userId);
 
-    // const foundCart = await productUser.findOne({ _id: userId });
+    const foundCart = await productUser.findOne({ _id: userId });
 
-    // foundCart.userCart = foundCart.userCart.filter(
-    //   (item) => item._id != productId
-    // );
+    foundCart.userCart = foundCart.userCart.filter(
+      (item) => item._id != productId
+    );
 
-    // foundCart.save();
+    foundCart.save();
 
-    // res.json({
-    //   message: "item remove",
-    // });
+    res.json({
+      message: "item remove",
+      data: foundCart,
+    });
   } catch (error) {
     console.log(error);
   }
